@@ -124,4 +124,4 @@ app.use(async function(req, res, next) {
 app.use(helper.catchPanic);
 
 console.log(ENV_INFO);
-app.listen(ENV_INFO.NODE_PORT, () => console.log('app listening on port 3000!'));
+app.listen(ENV_INFO.NODE_PORT, () => console.log('app listening on port'+ENV_INFO.NODE_PORT));
