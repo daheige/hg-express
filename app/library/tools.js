@@ -1,7 +1,8 @@
-const uuidLib = require("node-uuid");
-const fs = require('fs');
 const crypto = require('crypto');
 const querystring = require('querystring');
+const axios = require('axios'); //axios库
+const uuidLib = require('node-uuid');
+const fs = require('fs');
 
 //日志级别从低到高
 const logLevel = {
@@ -75,17 +76,6 @@ let libs = {
     uuid: function() {
         return uuidLib.v4();
     },
-    parseParams: function(params = {}) {
-        if (typeof params == 'object' && Object.keys(params).length) {
-            params = querystring.stringify(params);
-        } else if (typeof params == 'string' && params) {
-            params = encodeURIComponent(params);
-        } else {
-            params = querystring.stringify(params);
-        }
-
-        return params;
-    },
     md5: md5,
     zeroNum: zeroNum,
     log: writeLog,
@@ -110,6 +100,105 @@ let libs = {
     },
     alterLog: function(data = {}, context = {}) {
         writeLog(data, context, 'alter');
+    },
+    formatParams: function(params = {}) {
+        if (typeof params == 'object' && Object.keys(params).length) {
+            params = querystring.stringify(params);
+        } else if (typeof params == 'string' && params) {
+            params = encodeURIComponent(params);
+        } else {
+            params = querystring.stringify(params);
+        }
+
+        return params;
+    },
+    //get请求，返回结果是一个promise
+    //请求参数params必须是一个对象
+    //返回结果是一个promise
+    get: function(baseUrl = '', url = '', params = {}, headers = {}) {
+        if (url == null || url == '') {
+            return new Promise(function(resolve, reject) {
+                reject({
+                    status: 500,
+                    message: 'url不能为空',
+                    data: null,
+                });
+            });
+        }
+
+        //请求参数设置
+        let options = {
+            method: "GET",
+            params: params || {},
+            timeout: 2000,
+        };
+
+        //baseUrl设置
+        if (baseUrl != '' && baseUrl != null) {
+            options.baseURL = baseUrl;
+        }
+
+        //自定义header头
+        if (Object.keys(headers).length) {
+            options.headers = headers;
+        }
+
+        //创建一个实例
+        let instance = axios.create(options);
+        return instance.get(url);
+    },
+    //请求参数params必须是一个对象
+    post: function(baseUrl = '', url = '', params = {}, headers = {}) {
+        if (url == null || url == '') {
+            return new Promise(function(resolve, reject) {
+                reject({
+                    status: 500,
+                    message: 'url不能为空',
+                    data: null,
+                });
+            });
+        }
+
+        //请求参数设置
+        let options = {
+            method: "POST",
+            data: params || {},
+            timeout: 2000,
+        };
+
+        //baseUrl设置
+        if (baseUrl != '' && baseUrl != null) {
+            options.baseURL = baseUrl;
+        }
+
+        //请求头设置
+        options.headers = {
+            'Content-Type': 'application/x-www-form-urlencoded'
+        }
+
+        //自定义header头
+        let opt = Object.keys(headers);
+        let optLen = opt.length;
+        if (optLen) {
+            for (let i = 0; i < optLen; i++) {
+                let k = opt[i];
+                options.headers[k] = headers[k];
+            }
+        }
+
+        console.log("====current options===", options)
+        console.log("====request uri====", url)
+
+        //创建一个实例，这里需要吧options传递进入
+        let instance = axios.create(options);
+        let res = instance.post(url); //返回结果是一个promise
+        /* res.then(function(data) {
+             console.log(data);
+         }).catch(function(err) {
+             console.log('res error: ', err)
+         })*/
+
+        return res;
     }
 };
 
