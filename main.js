@@ -9,7 +9,7 @@ const runRouter = require(appPath + "/routes/router");
 
 /*===============app运行环境和端口==========*/
 let env_info = {
-    NODE_PORT: process.env.NODE_PORT || 3000, //生产环境默认3000
+    NODE_PORT: process.env.NODE_PORT || 1337, //生产环境默认1337
     NODE_ENV: (process.env.NODE_ENV || 'production').toLowerCase(),
 }
 
@@ -124,4 +124,6 @@ app.use(async function(req, res, next) {
 app.use(helper.catchPanic);
 
 console.log(ENV_INFO);
-app.listen(ENV_INFO.NODE_PORT, () => console.log('app listening on port'+ENV_INFO.NODE_PORT));
+
+//启动main
+app.listen(ENV_INFO.NODE_PORT, () => console.log('app listening on port: ' + ENV_INFO.NODE_PORT));
