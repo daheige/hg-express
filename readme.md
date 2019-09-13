@@ -22,6 +22,10 @@
 
 # 项目 npm 初始化
 
+    设置cnpm源
+    $ npm install -g cnpm --registry=https://registry.npm.taobao.org
+    $ cnpm install -g yarn
+
     请执行 yarn install 安装必要的npm
 
 # 开始运行
